@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>php-chat | Example | Client 1</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="reset.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+</head>
+<body>
+    <section class="dialog" id="connectFormDialog">
+        <form id="connectForm" onsubmit="return connectToChat();">
+            <p>
+                <input type="text" name="user.name" placeholder="Enter your name" />
+            </p>
+            <p>
+                <input type="text" name="room.name" placeholder="Enter a room name" />
+            </p>
+            <p>
+                <input type="submit" value="Connect" />
+            </p>
+        </form>
+    </section>
+    <section id="messageDialog">
+        <ul id="messageList"></ul>
+
+        <form id="messageForm" onsubmit="return sendChatMessage();">
+            <p>
+                <textarea name="message" placeholder="Enter your message..."></textarea>
+            </p>
+            <p>
+                <input type="submit" value="Send Message" />
+            </p>
+        </form>
+    </section>
+
+    <script type="text/javascript" src="chat.js"></script>
+</body>
+</html>

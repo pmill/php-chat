@@ -1,0 +1,29 @@
+{
+    "name":             "pmill/php-chat",
+    "description":      " A multi-user multi-room ratchet server ",
+    "keywords":         ["php", "web socket", "ratchet", "chat"],
+    "homepage":         "https://github.com/pmill/php-chat",
+    "time":             "2015-07-08",
+    "license":          "MIT",
+    "authors": [
+        {
+            "name":         "pmill",
+            "email":        "dev.pmill@gmail.com",
+            "homepage":     "https://github.com/pmill",
+            "role":         "Author"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "pmill\\Chat": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "cboden/ratchet": "0.3.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "codeclimate/php-test-reporter": "dev-master"
+    }
+}

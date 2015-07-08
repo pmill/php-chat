@@ -1,0 +1,69 @@
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    position: relative;
+    min-height: 100%;
+}
+
+#connectFormDialog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+
+#connectFormDialog p {
+    width: auto;
+    margin: 8px 0;
+}
+
+form input[type=text],
+form textarea {
+    width: 200px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    border-color: #aaa;
+    border-width: 1px;
+}
+
+form input[type=submit] {
+    width: 100%;
+    padding: 3px;
+}
+
+
+#messageDialog {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    display: none;
+}
+
+#messageList {
+    height: calc(100% - 120px);
+    overflow-y: auto;
+}
+
+#messageList li {
+    text-align: center;
+}
+
+#messageForm {
+    width: 30%;
+    margin: 0 auto;
+    padding-top: 10px;
+    height: 120px;
+}
+
+#messageForm textarea {
+    width: calc(100% - 16px);
+}
+
+#messageForm input[type=submit] {
+    width: 100%;
+}
