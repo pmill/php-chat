@@ -1,9 +1,10 @@
 <?php
 namespace pmill\Chat;
 
+use pmill\Chat\Interfaces\ConnectedClientInterface;
 use Ratchet\ConnectionInterface;
 
-class ConnectedClient
+class ConnectedClient implements ConnectedClientInterface
 {
 
     /**
@@ -67,6 +68,16 @@ class ConnectedClient
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return array
+     */
+    public function asArray()
+    {
+        return array(
+            'name'=>$this->name,
+        );
     }
 
 }

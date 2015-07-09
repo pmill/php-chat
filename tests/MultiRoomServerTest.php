@@ -3,12 +3,15 @@
 class MultiRoomServerTest extends PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var array
+     */
     protected $connections;
 
     public function setUp()
     {
         $this->connections = array();
-        for ($i=0; $i<5; $i++) {
+        for ($i=0; $i<4; $i++) {
             $connection = $this->getMockBuilder('Ratchet\ConnectionInterface')
                 ->setMethods(array('send','close'))
                 ->getMock();
@@ -28,7 +31,7 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
             'userName'=>'User 1',
         );
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode($packet));
     }
 
@@ -43,7 +46,7 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
             'action'=>'invalid-action',
         );
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode($packet));
     }
 
@@ -52,10 +55,10 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
         $packet = array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         );
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode($packet));
 
         $rooms = $server->getRooms();
@@ -67,10 +70,10 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
         $packet = array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         );
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->setRooms(array('room1'=>array()));
         $server->onMessage($this->connections[0], json_encode($packet));
 
@@ -84,10 +87,10 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
         $packet = array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         );
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode($packet));
 
         $clients = $server->getClients();
@@ -108,10 +111,10 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
         $packet = array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         );
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode($packet));
     }
 
@@ -128,10 +131,10 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
         $packet = array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         );
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode($packet));
     }
 
@@ -145,17 +148,17 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
                 return $packet['message'] == 'User 2 has connected';
             }));
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         )));
 
         $server->onMessage($this->connections[1], json_encode(array(
             'roomId'=>'room1',
             'userName'=>'User 2',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         )));
     }
 
@@ -169,16 +172,16 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
                 return $packet['clients'][0]['name'] == 'User 1';
             }));
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         )));
 
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_LIST_USERS,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_LIST_USERS,
         )));
     }
 
@@ -192,16 +195,16 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
                 return $packet['message'] == 'test message body';
             }));
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         )));
 
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_MESSAGE_RECEIVED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_MESSAGE_RECEIVED,
             'timestamp'=>time(),
             'message'=>'test message body',
         )));
@@ -209,11 +212,11 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
 
     public function testDisconnectedClientIsRemovedFromRoom()
     {
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         )));
 
         $server->onClose($this->connections[0]);
@@ -224,11 +227,11 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
 
     public function testErroredClientIsDisconnected()
     {
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         )));
 
         $server->onError($this->connections[0], new \Exception('example error'));
@@ -247,17 +250,17 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
                 return $packet['message'] == 'User 2 has left';
             }));
 
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
             'userName'=>'User 1',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         )));
 
         $server->onMessage($this->connections[1], json_encode(array(
             'roomId'=>'room1',
             'userName'=>'User 2',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
         )));
 
         $server->onClose($this->connections[1]);
@@ -268,11 +271,65 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
      */
     public function testFindClientException()
     {
-        $server = new \pmill\Chat\MultiRoomServer;
+        $server = new \pmill\Chat\BasicMultiRoomServer;
         $server->onMessage($this->connections[0], json_encode(array(
             'roomId'=>'room1',
             'message'=>'message',
-            'action'=>\pmill\Chat\MultiRoomServer::ACTION_MESSAGE_RECEIVED,
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_MESSAGE_RECEIVED,
+        )));
+    }
+
+    public function testRoomClientsNotReceivingMessagesFromOtherRooms()
+    {
+        $this->connections[1]
+            ->expects($this->at(2))
+            ->method('send')
+            ->with($this->callback(function($packet){
+                $packet = json_decode($packet, true);
+                return $packet['message'] == 'message example';
+            }));
+
+        // User 3 expects welcome message, user list message, and User 4 connected
+        $this->connections[2]
+            ->expects($this->exactly(3))
+            ->method('send')
+            ->withAnyParameters();
+
+        // User 4 only expects welcome message and user list message
+        $this->connections[3]
+            ->expects($this->exactly(2))
+            ->method('send')
+            ->withAnyParameters();
+
+        $server = new \pmill\Chat\BasicMultiRoomServer;
+        $server->onMessage($this->connections[0], json_encode(array(
+            'roomId'=>'room1',
+            'userName'=>'User 1',
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
+        )));
+
+        $server->onMessage($this->connections[1], json_encode(array(
+            'roomId'=>'room1',
+            'userName'=>'User 2',
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
+        )));
+
+        $server->onMessage($this->connections[2], json_encode(array(
+            'roomId'=>'room2',
+            'userName'=>'User 3',
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
+        )));
+
+        $server->onMessage($this->connections[3], json_encode(array(
+            'roomId'=>'room2',
+            'userName'=>'User 4',
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_USER_CONNECTED,
+        )));
+
+        $server->onMessage($this->connections[0], json_encode(array(
+            'roomId'=>'room1',
+            'message'=>'message example',
+            'action'=>\pmill\Chat\BasicMultiRoomServer::ACTION_MESSAGE_RECEIVED,
         )));
     }
 
