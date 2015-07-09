@@ -27,6 +27,11 @@ class BasicMultiRoomServer extends AbstractMultiRoomServer
         return $message;
     }
 
+    protected function logMessageReceived(ConnectedClientInterface $from, $message, $timestamp)
+    {
+        /** save messages to a database, etc... */
+    }
+
     protected function createClient(ConnectionInterface $conn, $name)
     {
         $client = new ConnectedClient;

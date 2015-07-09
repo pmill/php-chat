@@ -78,6 +78,14 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
     abstract protected function makeMessageReceivedMessage(ConnectedClientInterface $from, $message, $timestamp);
 
     /**
+     * @param ConnectedClientInterface $from
+     * @param string $message
+     * @param int $timestamp
+     * @return string
+     */
+    abstract protected function logMessageReceived(ConnectedClientInterface $from, $message, $timestamp);
+
+    /**
      * @param ConnectionInterface $conn
      * @param $name
      * @return ConnectedClientInterface
@@ -131,6 +139,7 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
             case self::ACTION_MESSAGE_RECEIVED:
                 $msg['timestamp'] = isset($msg['timestamp']) ? $msg['timestamp'] : time();
                 $client = $this->findClient($conn);
+                $this->logMessageReceived($client, $roomId, $msg['message'], $msg['timestamp']);
                 $this->sendMessage($client, $roomId, $msg['message'], $msg['timestamp']);
                 break;
             default: throw new InvalidActionException('Invalid action: '.$msg['action']);
