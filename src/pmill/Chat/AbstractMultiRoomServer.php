@@ -10,6 +10,7 @@ use Ratchet\Http\HttpServer;
 use Ratchet\MessageComponentInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
+use ReflectionClass;
 
 abstract class AbstractMultiRoomServer implements MessageComponentInterface
 {
@@ -51,6 +52,11 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
      * @var array|ConnectedClientInterface[]
      */
     protected $clients;
+
+    /**
+     * @var array
+     */
+    protected $validActions;
 
     /**
      * @param ConnectedClientInterface $client
@@ -100,6 +106,14 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
     {
         $this->rooms = array();
         $this->clients = array();
+
+        $refl = new ReflectionClass(get_class());
+        $this->validActions = array();
+        foreach ($refl->getConstants() AS $key=>$value) {
+            if (substr($key, 0, 6) === 'ACTION') {
+                $this->validActions[$key] = $value;
+            }
+        }
     }
 
     /**
@@ -125,6 +139,8 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
         if (!isset($msg['action'])) {
             throw new MissingActionException('No action specified');
         }
+
+        $this->checkActionExists($msg['action']);
 
         if ($msg['action'] != self::ACTION_USER_CONNECTED) {
             $client = $this->findClient($conn);
@@ -365,6 +381,17 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
         );
 
         $this->sendData($client, $dataPacket);
+    }
+
+    /**
+     * @param $action
+     * @throws InvalidActionException
+     */
+    protected function checkActionExists($action)
+    {
+        if (!in_array($action, $this->validActions)) {
+            throw new InvalidActionException('Invalid action: '.$action);
+        }
     }
 
     /**
