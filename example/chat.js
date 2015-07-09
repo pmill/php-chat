@@ -1,5 +1,5 @@
 // Change localhost to the name or ip address of the host running the chat server
-var chatUrl = 'ws://zhc:9911';
+var chatUrl = 'ws://localhost:9911';
 
 function displayChatMessage(from, message) {
     var node = document.createElement("LI");
