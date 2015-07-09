@@ -222,6 +222,21 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('connection0', $rooms['room1']);
     }
 
+    public function testErroredClientIsDisconnected()
+    {
+        $server = new \pmill\Chat\MultiRoomServer;
+        $server->onMessage($this->connections[0], json_encode(array(
+            'roomId'=>'room1',
+            'userName'=>'User 1',
+            'action'=>\pmill\Chat\MultiRoomServer::ACTION_USER_CONNECTED,
+        )));
+
+        $server->onError($this->connections[0], new \Exception('example error'));
+
+        $rooms = $server->getRooms();
+        $this->assertArrayNotHasKey('connection0', $rooms['room1']);
+    }
+
     public function testDisconnectedClientMessageSent()
     {
         $this->connections[0]
@@ -246,6 +261,19 @@ class MultiRoomServerTest extends PHPUnit_Framework_TestCase
         )));
 
         $server->onClose($this->connections[1]);
+    }
+
+    /**
+     * @expectedException pmill\Chat\Exception\ConnectedClientNotFoundException
+     */
+    public function testFindClientException()
+    {
+        $server = new \pmill\Chat\MultiRoomServer;
+        $server->onMessage($this->connections[0], json_encode(array(
+            'roomId'=>'room1',
+            'message'=>'message',
+            'action'=>\pmill\Chat\MultiRoomServer::ACTION_MESSAGE_RECEIVED,
+        )));
     }
 
 }

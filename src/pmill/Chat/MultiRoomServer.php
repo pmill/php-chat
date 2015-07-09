@@ -120,19 +120,7 @@ class MultiRoomServer implements MessageComponentInterface
      */
     public function onClose(ConnectionInterface $conn)
     {
-        $client = $this->findClient($conn);
-
-        unset($this->clients[$client->getResourceId()]);
-        foreach ($this->rooms AS $roomId=>$connectedClients) {
-            if (isset($connectedClients[$client->getResourceId()])) {
-                $clientRoomId = $roomId;
-                unset($this->rooms[$roomId][$client->getResourceId()]);
-            }
-        }
-
-        if (isset($clientRoomId)) {
-            $this->sendUserDisconnectedMessage($client, $clientRoomId);
-        }
+        $this->closeClientConnection($conn);
     }
 
     /**
@@ -141,6 +129,7 @@ class MultiRoomServer implements MessageComponentInterface
      */
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
+        $this->closeClientConnection($conn);
         $conn->close();
     }
 
@@ -174,6 +163,27 @@ class MultiRoomServer implements MessageComponentInterface
     public function setClients($clients)
     {
         $this->clients = $clients;
+    }
+
+    /**
+     * @param ConnectionInterface $conn
+     * @throws ConnectedClientNotFoundException
+     */
+    protected function closeClientConnection(ConnectionInterface $conn)
+    {
+        $client = $this->findClient($conn);
+
+        unset($this->clients[$client->getResourceId()]);
+        foreach ($this->rooms AS $roomId=>$connectedClients) {
+            if (isset($connectedClients[$client->getResourceId()])) {
+                $clientRoomId = $roomId;
+                unset($this->rooms[$roomId][$client->getResourceId()]);
+            }
+        }
+
+        if (isset($clientRoomId)) {
+            $this->sendUserDisconnectedMessage($client, $clientRoomId);
+        }
     }
 
     /**
