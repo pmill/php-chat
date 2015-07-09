@@ -25,7 +25,7 @@
 
         <form id="messageForm" onsubmit="return sendChatMessage();">
             <p>
-                <textarea name="message" placeholder="Enter your message..."></textarea>
+                <textarea name="message" placeholder="Enter your message..." onkeyup="updateChatTyping()"></textarea>
             </p>
             <p>
                 <input type="submit" value="Send Message" />

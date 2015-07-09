@@ -17,11 +17,15 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
     const ACTION_USER_CONNECTED = 'connect';
     const ACTION_MESSAGE_RECEIVED = 'message';
     const ACTION_LIST_USERS = 'list-users';
+    const ACTION_USER_STARTED_TYPING = 'start-typing';
+    const ACTION_USER_STOPPED_TYPING = 'stop-typing';
 
     const PACKET_TYPE_USER_CONNECTED = 'user-connected';
     const PACKET_TYPE_USER_DISCONNECTED = 'user-disconnected';
     const PACKET_TYPE_MESSAGE = 'message';
     const PACKET_TYPE_USER_LIST = 'list-users';
+    const PACKET_TYPE_USER_STARTED_TYPING = 'user-started-typing';
+    const PACKET_TYPE_USER_STOPPED_TYPING = 'user-stopped-typing';
 
     /**
      * @param AbstractMultiRoomServer $chatServer
@@ -117,30 +121,39 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
     {
         echo "Packet received: ".$msg.PHP_EOL;
         $msg = json_decode($msg, true);
-        $roomId = $this->makeRoom($msg['roomId']);
 
         if (!isset($msg['action'])) {
             throw new MissingActionException('No action specified');
         }
 
+        if ($msg['action'] != self::ACTION_USER_CONNECTED) {
+            $client = $this->findClient($conn);
+            $roomId = $this->findClientRoom($client);
+        }
+
         switch ($msg['action']) {
             case self::ACTION_USER_CONNECTED:
-                $userName = $msg['userName'];
-                $client = $this->createClient($conn, $userName);
+                $roomId = $this->makeRoom($msg['roomId']);
+                $client = $this->createClient($conn, $msg['userName']);
                 $this->connectUserToRoom($client, $roomId);
                 $this->sendUserConnectedMessage($client, $roomId);
                 $this->sendUserWelcomeMessage($client, $roomId);
                 $this->sendListUsersMessage($client, $roomId);
                 break;
             case self::ACTION_LIST_USERS:
-                $client = $this->findClient($conn);
                 $this->sendListUsersMessage($client, $roomId);
                 break;
             case self::ACTION_MESSAGE_RECEIVED:
                 $msg['timestamp'] = isset($msg['timestamp']) ? $msg['timestamp'] : time();
-                $client = $this->findClient($conn);
                 $this->logMessageReceived($client, $roomId, $msg['message'], $msg['timestamp']);
                 $this->sendMessage($client, $roomId, $msg['message'], $msg['timestamp']);
+                $this->sendUserStoppedTypingMessage($client, $roomId);
+                break;
+            case self::ACTION_USER_STARTED_TYPING:
+                $this->sendUserStartedTypingMessage($client, $roomId);
+                break;
+            case self::ACTION_USER_STOPPED_TYPING:
+                $this->sendUserStoppedTypingMessage($client, $roomId);
                 break;
             default: throw new InvalidActionException('Invalid action: '.$msg['action']);
         }
@@ -302,6 +315,40 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
      * @param ConnectedClientInterface $client
      * @param $roomId
      */
+    protected function sendUserStartedTypingMessage(ConnectedClientInterface $client, $roomId)
+    {
+        $dataPacket = array(
+            'type'=>self::PACKET_TYPE_USER_STARTED_TYPING,
+            'from'=>$client->asArray(),
+            'timestamp'=>time(),
+        );
+
+        $clients = $this->findRoomClients($roomId);
+        unset($clients[$client->getResourceId()]);
+        $this->sendDataToClients($clients, $dataPacket);
+    }
+
+    /**
+     * @param ConnectedClientInterface $client
+     * @param $roomId
+     */
+    protected function sendUserStoppedTypingMessage(ConnectedClientInterface $client, $roomId)
+    {
+        $dataPacket = array(
+            'type'=>self::PACKET_TYPE_USER_STOPPED_TYPING,
+            'from'=>$client->asArray(),
+            'timestamp'=>time(),
+        );
+
+        $clients = $this->findRoomClients($roomId);
+        unset($clients[$client->getResourceId()]);
+        $this->sendDataToClients($clients, $dataPacket);
+    }
+
+    /**
+     * @param ConnectedClientInterface $client
+     * @param $roomId
+     */
     protected function sendListUsersMessage(ConnectedClientInterface $client, $roomId)
     {
         $clients = array();
@@ -337,6 +384,22 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
     protected function findRoomClients($roomId)
     {
         return $this->rooms[$roomId];
+    }
+
+    /**
+     * @param ConnectedClientInterface $client
+     * @return int|string
+     * @throws ConnectedClientNotFoundException
+     */
+    protected function findClientRoom(ConnectedClientInterface $client)
+    {
+        foreach ($this->rooms AS $roomId=>$roomClients) {
+            if (isset($roomClients[$client->getResourceId()])) {
+                return $roomId;
+            }
+        }
+
+        throw new ConnectedClientNotFoundException($client->getResourceId());
     }
 
     /**
