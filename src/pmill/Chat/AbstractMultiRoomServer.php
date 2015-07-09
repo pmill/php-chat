@@ -24,12 +24,12 @@ abstract class AbstractMultiRoomServer implements MessageComponentInterface
     const PACKET_TYPE_USER_LIST = 'list-users';
 
     /**
-     * @param MultiRoomServer $chatServer
+     * @param AbstractMultiRoomServer $chatServer
      * @param int $port
      * @param string $ip
      * @return IoServer
      */
-    public static function run(MultiRoomServer $chatServer, $port, $ip='0.0.0.0')
+    public static function run(AbstractMultiRoomServer $chatServer, $port, $ip='0.0.0.0')
     {
         $wsServer = new WsServer($chatServer);
         $http = new HttpServer($wsServer);

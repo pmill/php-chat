@@ -1,8 +1,7 @@
 <?php
-require_once "../vendor/autoload.php";
-require_once "ExampleServer.php";
+require_once __DIR__."/../vendor/autoload.php";
 
 $port = 9911;
 $server = new \pmill\Chat\BasicMultiRoomServer;
 
-\pmill\Chat\MultiRoomServer::run($server, $port);
+\pmill\Chat\BasicMultiRoomServer::run($server, $port);

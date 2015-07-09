@@ -53,6 +53,11 @@ example/chat.js with the host name (or ip address) of the server you ran the pre
 Version History
 ---------------
 
+0.2.0 (09/07/2015)
+
+*   Separated server and output into separate classes
+*   Added user defined message logging
+
 0.1.0 (08/07/2015)
 
 *   First public release of php-chat
