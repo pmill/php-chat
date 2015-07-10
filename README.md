@@ -45,10 +45,12 @@ An example is provided in the example/ directory. Start the server with the comm
 
     php example/server.php
 
-An example HTML client interface is located at example/client.html. You will need to update the chatUrl variable in 
+An barebones example HTML client interface is located at example/client.html. You will need to update the chatUrl variable in 
 example/chat.js with the host name (or ip address) of the server you ran the previous command on.
  
     var chatUrl = 'ws://your-host-name:9911';
+    
+A prettier React and Semantic UI client interface is located at [pmill/react-chat](https://github.com/pmill/react-chat).
 
 Version History
 ---------------
